@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/register_cubit.dart';
 import 'package:smart_box/bloc/states/register_states.dart';
-import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/login_form.dart';
 import 'package:smart_box/widgets/input_field.dart';
+import 'package:smart_box/widgets/navigation.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({Key? key}) : super(key: key);
@@ -145,7 +145,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => HomePage(user: state.user),
+                                  builder: (context) => NavigationWrapper(user: state.user),
                                 ),
                               );
                             }

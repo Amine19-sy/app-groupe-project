@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_box/bloc/box_model.dart';
+import 'package:smart_box/services/box_model.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();

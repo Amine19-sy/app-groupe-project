@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/login_cubit.dart';
 import 'package:smart_box/bloc/states/login_states.dart';
-import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/register_form.dart';
 import 'package:smart_box/widgets/input_field.dart';
+import 'package:smart_box/widgets/navigation.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -31,7 +31,7 @@ class _LoginFormState extends State<LoginForm> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(user: state.user),
+              builder: (context) => NavigationWrapper(user: state.user),
             ),
           );
         }

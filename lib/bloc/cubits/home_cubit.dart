@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:smart_box/bloc/box_model.dart';
+import 'package:smart_box/services/box_model.dart';
 import 'package:smart_box/bloc/states/home_states.dart';
 import 'package:smart_box/backend/Item_Box.dart';
 

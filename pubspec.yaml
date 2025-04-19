@@ -18,12 +18,20 @@ dependencies:
   syncfusion_flutter_gauges: ^29.1.37
   sqflite: ^2.4.2
   crypto: ^3.0.6
+  flutter_launcher_icons: ^0.14.3
+  lucide_icons: ^0.257.0
+  file_picker: ^10.1.2
   # lottie: ^3.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   # flutter_lints: ^4.0.0
+  
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/smart_box_icon_1024.png" 
 
 flutter:
   uses-material-design: true
@@ -33,3 +41,11 @@ flutter:
   - assets/google.png
   - assets/apple.png
   - assets/facebook.png
+  - assets/icons/menu_in.png
+  - assets/icons/menu.png
+  - assets/icons/add_in.png
+  - assets/icons/add.png
+  - assets/icons/not_in.png
+  - assets/icons/not.png
+  - assets/icons/profile_in.png
+  - assets/icons/profile.png
