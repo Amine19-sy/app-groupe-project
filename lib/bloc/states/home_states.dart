@@ -1,21 +1,29 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_box/models/box.dart';
+import 'package:smart_box/bloc/box_model.dart';
 
 abstract class HomeState extends Equatable {
+  const HomeState();
+
   @override
   List<Object?> get props => [];
 }
 
-class HomeInitial extends HomeState {}
+class HomeInitial extends HomeState {
+  const HomeInitial();
+}
 
-class HomeLoading extends HomeState {}
+class HomeLoading extends HomeState {
+  const HomeLoading();
+}
 
-class HomeEmpty extends HomeState {}
+class HomeEmpty extends HomeState {
+  const HomeEmpty();
+}
 
 class HomeLoaded extends HomeState {
   final List<Box> boxes;
 
-  HomeLoaded({required this.boxes});
+  const HomeLoaded({required this.boxes});
 
   @override
   List<Object?> get props => [boxes];
@@ -24,7 +32,7 @@ class HomeLoaded extends HomeState {
 class HomeError extends HomeState {
   final String message;
 
-  HomeError({required this.message});
+  const HomeError({required this.message});
 
   @override
   List<Object?> get props => [message];

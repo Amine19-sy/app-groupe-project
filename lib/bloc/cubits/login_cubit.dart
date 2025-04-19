@@ -1,26 +1,23 @@
 import 'package:bloc/bloc.dart';
-import 'package:smart_box/services/auth_service.dart';
-import '../states/login_states.dart';
-import 'dart:async';
-
-// import '../states/login_state.dart';
-
+import 'package:smart_box/backend/Register_Login.dart';
+import 'package:smart_box/bloc/states/login_states.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  final AuthService authService;
-  
-  LoginCubit({required this.authService}) : super(LoginInitial());
+  LoginCubit() : super(LoginInitial());
 
-  /// Updated method to accept username (or email) and password.
-  Future<void> login(String identifier, String password) async {
+  Future<void> login(String email, String password) async {
     emit(LoginLoading());
     try {
-      
-      final response = await authService.login(
-        username: identifier,
+      final result = await AuthService.login(
+        email: email,
         password: password,
       );
-      emit(LoginSuccess(response));
+
+      if (result["success"]) {
+        emit(LoginSuccess(result["user"]));
+      } else {
+        emit(LoginFailure(result["error"]));
+      }
     } catch (error) {
       emit(LoginFailure(error.toString()));
     }

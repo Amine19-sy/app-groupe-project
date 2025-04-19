@@ -1,17 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'dart:async';
-
 import 'package:smart_box/bloc/states/register_states.dart';
-import 'package:smart_box/services/auth_service.dart';
-
-
+import 'package:smart_box/backend/Register_Login.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
-  final AuthService authService;
-  
-  RegisterCubit({required this.authService}) : super(RegisterInitial());
+  RegisterCubit() : super(RegisterInitial());
 
-  /// Updated method to accept the required fields.
   Future<void> register({
     required String name,
     required String email,
@@ -22,14 +15,21 @@ class RegisterCubit extends Cubit<RegisterState> {
       emit(RegisterFailure("Passwords do not match!"));
       return;
     }
+
     emit(RegisterLoading());
+
     try {
-      final response = await authService.register(
-        username: name,
+      final result = await AuthService.register(
+        name: name,
         email: email,
         password: password,
       );
-      emit(RegisterSuccess(response));
+
+      if (result["success"]) {
+        emit(RegisterSuccess(result["data"]));
+      } else {
+        emit(RegisterFailure(result["error"]));
+      }
     } catch (error) {
       emit(RegisterFailure(error.toString()));
     }

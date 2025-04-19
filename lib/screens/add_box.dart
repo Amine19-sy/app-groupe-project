@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_box/widgets/input_field.dart';
-import 'package:smart_box/services/box_service.dart';
 
 class AddBoxForm extends StatefulWidget {
   final String userId; // Pass userId from the calling screen
@@ -18,7 +17,6 @@ class _AddBoxFormState extends State<AddBoxForm> {
   final _descriptionController = TextEditingController();
 
   bool _isLoading = false;
-  final BoxService _boxService = BoxService();
 
   @override
   void dispose() {
@@ -35,11 +33,7 @@ class _AddBoxFormState extends State<AddBoxForm> {
   });
   
   try {
-    final newBox = await _boxService.addBox(
-      userId: widget.userId,
-      name: _nameController.text,
-      description: _descriptionController.text,
-    );
+
     print("Box added");
 
     if (mounted) {

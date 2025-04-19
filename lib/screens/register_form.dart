@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/register_cubit.dart';
 import 'package:smart_box/bloc/states/register_states.dart';
+import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/login_form.dart';
 import 'package:smart_box/widgets/input_field.dart';
 
@@ -138,12 +139,21 @@ class _RegisterFormState extends State<RegisterForm> {
                           ],
                         ),
                         const SizedBox(height: 48),
-                        BlocBuilder<RegisterCubit, RegisterState>(
+                        BlocConsumer<RegisterCubit, RegisterState>(
+                          listener: (context, state) {
+                            if (state is RegisterSuccess) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(user: state.user),
+                                ),
+                              );
+                            }
+                          },
                           builder: (context, state) {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                // Display error message above the button if there's a failure.
                                 if (state is RegisterFailure)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 16.0),
@@ -156,22 +166,17 @@ class _RegisterFormState extends State<RegisterForm> {
                                       ),
                                     ),
                                   ),
-                                  
                                 SizedBox(
                                   height: 50,
                                   child: ElevatedButton(
                                     onPressed: state is RegisterLoading
                                         ? null
                                         : () {
-                                            if (_registerFormKey.currentState!
-                                                .validate()) {
-                                              // Check that terms are accepted.
+                                            if (_registerFormKey.currentState!.validate()) {
                                               if (!isAcceptTerms) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
+                                                ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(
-                                                    content: Text(
-                                                        "Please accept the terms and conditions"),
+                                                    content: Text("Please accept the terms and conditions"),
                                                   ),
                                                 );
                                                 return;
