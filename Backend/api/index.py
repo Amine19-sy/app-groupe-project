@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from supabase import create_client
 import os
 from dotenv import load_dotenv
+import base64
 
 # Load environment variables
 load_dotenv()
@@ -10,6 +11,8 @@ load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+# ID de la Box 
+BOX_ID = 1 
 
 app = Flask(__name__)
 
@@ -111,107 +114,105 @@ def login():
 # -------------------------------
 
 # -------------------------------
-# Items endpoints
+# Box endpoints
 # -------------------------------
-
-@app.route('/api/items', methods=['GET'])
-def get_items():
-    box_id = request.args.get('box_id')
-    if not box_id:
-        return jsonify({'error': 'Missing box_id parameter'}), 400
-
+@app.route('/api/add_box', methods=['POST'])
+def add_box():
     try:
-        response = supabase.table("Item").select("*").eq("box_id", box_id).execute()
-        return jsonify(response.data), 200
+        name = request.form.get('name')
+        description = request.form.get('description')
+        user_id = request.form.get('user_id')
+        is_open = request.form.get('is_open', 'false').lower() == 'true'
+
+        image_file = request.files.get('image')
+        image_data = image_file.read() if image_file else None
+
+        box_data = {
+            "name": name,
+            "description": description,
+            "user_id": int(user_id),
+            "is_open": is_open
+        }
+
+        if image_data:
+            box_data["image"] = image_data
+
+        response = supabase.table("Box").insert(box_data).execute()
+        box = response.data[0]
+
+        # 🔥 ENCODE the image if exists to avoid serialization issues
+        if box.get("image"):
+            import base64
+            box["image"] = base64.b64encode(box["image"]).decode('utf-8')
+
+        return jsonify(box), 201
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-@app.route('/api/add_item', methods=['POST'])
-def add_item():
-    data = request.get_json()
-    required_fields = ['box_id', 'name']
-    if not data or not all(field in data for field in required_fields):
-        return jsonify({'error': 'Missing required fields: box_id and name'}), 400
-
+@app.route('/api/box/<int:box_id>', methods=['GET'])
+def get_box(box_id):
     try:
-        # Insert item
-        item_response = supabase.table("Item").insert({
-            "box_id": data["box_id"],
-            "name": data["name"],
-            "quantity": data.get("quantity", 1)
-        }).execute()
-
-        if not item_response.data:
-            return jsonify({"error": "Failed to add item"}), 400
-
-        item = item_response.data[0]
-
-        # Fetch box to get user_id
-        box_info = supabase.table("Box").select("user_id").eq("id", item["box_id"]).single().execute()
-
-        # Add to history
-        supabase.table("History").insert({
-            "user_id": box_info.data["user_id"],
-            "box_id": item["box_id"],
-            "item_id": item["id"],
-            "action_type": "ADD_ITEM",
-            "details": f"Added item {item['name']}"
-        }).execute()
-
-        return jsonify(item), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/api/remove_item/<int:item_id>', methods=['DELETE'])
-def remove_item(item_id):
-    try:
-        # Get the item
-        item_response = supabase.table("Item").select("*").eq("id", item_id).single().execute()
-        item = item_response.data
-
-        if not item:
-            return jsonify({"error": "Item not found"}), 404
-
-        # Get the box
-        box_response = supabase.table("Box").select("user_id").eq("id", item["box_id"]).single().execute()
-        box = box_response.data
-
+        response = supabase.table("Box").select("*").eq("id", box_id).single().execute()
+        box = response.data
         if not box:
             return jsonify({"error": "Box not found"}), 404
 
-        # Delete the item
-        supabase.table("Item").delete().eq("id", item_id).execute()
+        if box.get("image"):
+            box["image"] = base64.b64encode(box["image"]).decode('utf-8')
 
-        # Add to history
-        supabase.table("History").insert({
-            "user_id": box["user_id"],
-            "box_id": item["box_id"],
-            "item_id": item["id"],
-            "action_type": "REMOVE_ITEM",
-            "details": f"Removed item {item['name']}"
+        return jsonify(box), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/update_box_image/<int:box_id>', methods=['PUT'])
+def update_box_image(box_id):
+    try:
+        image_file = request.files.get('image')
+        if not image_file:
+            return jsonify({"error": "No image uploaded"}), 400
+
+        image_data = image_file.read()
+
+        supabase.table("Box").update({
+            "image": image_data
+        }).eq("id", box_id).execute()
+
+        return jsonify({"message": "Image updated"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/remove_box_image/<int:box_id>', methods=['DELETE'])
+def remove_box_image(box_id):
+    try:
+        supabase.table("Box").update({"image": None}).eq("id", box_id).execute()
+        return jsonify({"message": "Image removed"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+#########################################################
+@app.route('/api/send_command', methods=['POST'])
+def send_command():
+    try:
+        data = request.get_json()
+        command = data.get("command")
+        box_id = data.get("box_id")
+
+        if not command or not box_id:
+            return jsonify({"error": "Missing 'command' or 'box_id'"}), 400
+
+        result = supabase.table("commands").insert({
+            "command": command,
+            "box_id": box_id
         }).execute()
 
-        return jsonify({"message": "Item removed successfully."}), 200
+        if result.status_code == 201:
+            return jsonify({"message": f"Command '{command}' sent to box {box_id}"}), 201
+        else:
+            return jsonify({"error": "Failed to insert command"}), 500
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-@app.route('/api/history/<int:box_id>', methods=['GET'])
-def get_history_by_box(box_id):
-    try:
-        response = supabase.table("History").select("*").eq("box_id", box_id).order("action_time", desc=True).execute()
-        return jsonify(response.data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/boxes', methods=['GET'])
-def get_all_boxes():
-    response = supabase.table("Box").select("*").execute()
-    return jsonify(response.data), 200
-
 
 # -------------------------------
 # Run the app

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_box/screens/box/AddboxDialogue.dart';
+import 'package:smart_box/screens/box/Addbox.dart';
 
 class AddPage extends StatelessWidget {
   const AddPage({super.key});
