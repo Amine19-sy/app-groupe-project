@@ -2,34 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/items_cubits.dart';
 import 'package:smart_box/bloc/states/items_states.dart';
-import 'package:smart_box/screens/add_item.dart';
 import 'package:smart_box/screens/item_details.dart';
 import 'package:smart_box/widgets/empty_state.dart';
 
-class Items extends StatefulWidget {
-  final int boxId;
+
+class SeeAllItems extends StatefulWidget {
+    final int boxId;
   final int userId;
-  const Items({super.key, required this.boxId, required this.userId});
+  const SeeAllItems({super.key, required this.boxId, required this.userId});
 
   @override
-  State<Items> createState() => _ItemsState();
+  State<SeeAllItems> createState() => _SeeAllItemsState();
 }
 
-class _ItemsState extends State<Items> {
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
-
-
+class _SeeAllItemsState extends State<SeeAllItems> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: BlocBuilder<ItemsCubit, ItemsState>(
+    return Scaffold(
+      appBar: AppBar(title: Text("All Items"),),
+      body: BlocBuilder<ItemsCubit, ItemsState>(
           builder: (context, state) {
             if (state is ItemsLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -220,23 +211,6 @@ class _ItemsState extends State<Items> {
             return const SizedBox.shrink();
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () async {
-            final result = await Navigator.push<bool>(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AddItemScreen(boxId: widget.boxId, userId: '1'),
-              ),
-            );
-
-            if (result == true) {
-              context.read<ItemsCubit>().getItems(widget.boxId);
-            }
-          },
-        ),
-      ),
     );
   }
 }
-

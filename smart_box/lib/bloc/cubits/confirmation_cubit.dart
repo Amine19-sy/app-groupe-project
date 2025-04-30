@@ -24,8 +24,6 @@ class ConfirmationCubit extends Cubit<ConfirmationState> {
 
     if (success) {
       emit(ResendCodeSuccess());
-    } else {
-      emit(ResendCodeFailure("Failed to resend the code."));
-    }
+    } 
   }
 }

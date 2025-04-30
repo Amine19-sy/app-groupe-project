@@ -24,6 +24,7 @@ class _LoginFormState extends State<LoginForm> {
     _passwordController.text = "admin";
     super.initState();
   }
+
   void dispose() {
     _identifierController.dispose();
     _passwordController.dispose();
@@ -33,22 +34,25 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginCubit, LoginState>(
-        listener: (context, state) {
-          if (state is LoginSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (_) => HomeCubit(
-                    userId: state.user["user"]["id"].toString(),
-                    boxService: BoxService(),
-                  )..fetchUserBoxes(),
-                  child: HomePage(user: state.user),
-                ),
-              ),
-            );
-          }
-        },
+      listener: (context, state) {
+        if (state is LoginSuccess) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => BlocProvider(
+                    create:
+                        (_) => HomeCubit(
+                          userId: state.user["user"]["id"].toString(),
+                          boxService: BoxService(),
+                        )..fetchUserBoxes(),
+                    child: HomePage(user: state.user),
+                  ),
+            ),
+          );
+        }
+      },
+      child: SafeArea(
         child: Scaffold(
           backgroundColor: Colors.white,
           body: BlocBuilder<LoginCubit, LoginState>(
@@ -56,16 +60,17 @@ class _LoginFormState extends State<LoginForm> {
               return Column(
                 children: [
                   Container(
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      color: Colors.grey[100],
-                      child: Center(
-                        child: Image.asset(
-                          'assets/img/logo_smart_box.png',
-                          width: 200,
-                          height: 200,
-                        ),
-                      )),
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    color: Colors.grey[100],
+                    child: Center(
+                      child: Image.asset(
+                        'assets/img/logo_smart_box.png',
+                        width: 200,
+                        height: 200,
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
@@ -112,63 +117,68 @@ class _LoginFormState extends State<LoginForm> {
                                   child: Text(
                                     state.error,
                                     style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               SizedBox(
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed: state is LoginLoading
-                                      ? null
-                                      : () {
-                                          if (_loginFormKey.currentState!
-                                              .validate()) {
-                                            context.read<LoginCubit>().login(
-                                                  _identifierController.text,
-                                                  _passwordController.text,
-                                                );
-                                          }
-                                        },
+                                  onPressed:
+                                      state is LoginLoading
+                                          ? null
+                                          : () {
+                                            if (_loginFormKey.currentState!
+                                                .validate()) {
+                                              context.read<LoginCubit>().login(
+                                                _identifierController.text,
+                                                _passwordController.text,
+                                              );
+                                            }
+                                          },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blue,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: state is LoginLoading
-                                      ? SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 3,
-                                            color: Colors.white,
+                                  child:
+                                      state is LoginLoading
+                                          ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                          : Text(
+                                            "Login",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        )
-                                      : Text(
-                                          "Login",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
                                 ),
                               ),
                               SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text("Not a member? ",
-                                      style: TextStyle(color: Colors.grey)),
+                                  Text(
+                                    "Not a member? ",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
                                   GestureDetector(
                                     onTap: () {
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                RegisterForm()),
+                                          builder: (context) => RegisterForm(),
+                                        ),
                                       );
                                     },
                                     child: Text(
@@ -231,6 +241,8 @@ class _LoginFormState extends State<LoginForm> {
               );
             },
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

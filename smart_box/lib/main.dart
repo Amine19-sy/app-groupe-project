@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/confirmation_cubit.dart';
 import 'package:smart_box/bloc/cubits/register_cubit.dart';
-import 'package:smart_box/screens/add_box.dart';
-import 'package:smart_box/screens/homepage.dart';
+// import 'package:smart_box/screens/add_box.dart';
+// import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/login_form.dart';
-import 'package:smart_box/screens/confirmation_code.dart';
-import 'package:smart_box/screens/register_form.dart';
+// import 'package:smart_box/screens/confirmation_code.dart';
+// import 'package:smart_box/screens/register_form.dart';
 import 'package:smart_box/services/auth_service.dart';
 
 import 'bloc/cubits/login_cubit.dart';
@@ -28,10 +28,9 @@ class MainApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        // home:HomePage(user:{"user": {"email": "admin@gmail.com", "id": 1, "username": "admin"}}),
         home:LoginForm(),
       ),
     );
   }
 }
- 
+  

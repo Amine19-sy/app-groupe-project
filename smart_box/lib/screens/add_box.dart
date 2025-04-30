@@ -81,76 +81,80 @@ class _AddBoxFormState extends State<AddBoxForm> {
             ),
           ),
         ),
-        body: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                CustomTextField(labelText: "Name", controller: _nameController),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  labelText: "Description",
-                  controller: _descriptionController,
-                  maxLines: 6,
-                ),
-                const SizedBox(height: 16),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(color: Colors.grey, fontSize: 16),
-                    children: [
-                      const TextSpan(text: "Or Use "),
-                      TextSpan(
-                        text: "QR Code!",
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+        body:  Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    labelText: "Name",
+                    controller: _nameController,
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    labelText: "Description",
+                    controller: _descriptionController,
+                    maxLines: 6,
+                  ),
+                  const SizedBox(height: 16),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                      children: [
+                        const TextSpan(text: "Or Use "),
+                        TextSpan(
+                          text: "QR Code!",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer:
+                              TapGestureRecognizer()
+                                ..onTap = () {
+                                  // Implement your QR code logic here.
+                                },
                         ),
-                        recognizer:
-                            TapGestureRecognizer()
-                              ..onTap = () {
-                                // Implement your QR code logic here.
-                              },
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      ],
                     ),
-                    child:
-                        _isLoading
-                            ? const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            )
-                            : const Text(
-                              "Add",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
                   ),
-                ),
-              ],
+                  const Spacer(),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child:
+                          _isLoading
+                              ? const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              )
+                              : const Text(
+                                "Add",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        // ),
       ),
     );
   }

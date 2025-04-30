@@ -40,24 +40,6 @@ class ItemsCubit extends Cubit<ItemsState> {
     emit(ItemsError(e.toString()));
   }
 }
-  // Future<void> addItem({
-  //   required int boxId,
-  //   required String name,
-  //   required int userId,
-  // }) async {
-  //   try {
-  //     emit(ItemsLoading());
-  //     await _itemService.addItem(
-  //       boxId: boxId,
-  //       name: name,
-  //       userId: userId,
-  //     );
-  //     final items = await _itemService.getItems(boxId);
-  //     emit(ItemsLoaded(items));
-  //   } catch (e) {
-  //     emit(ItemsError(e.toString()));
-  //   }
-  // }
 
   Future<void> removeItem({
     required int itemId,

@@ -32,7 +32,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/history_cubit.dart';
 import 'package:smart_box/bloc/states/history_states.dart';
 import 'package:smart_box/services/history_service.dart';
-import 'package:smart_box/models/history.dart';
+// import 'package:smart_box/models/history.dart';
 
 class HistoryPage extends StatefulWidget {
   final int boxId;
@@ -67,66 +67,77 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _historyCubit,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: BlocBuilder<HistoryCubit, HistoryState>(
-          builder: (context, state) {
-            if (state is HistoryLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is HistoryLoaded) {
-              final items = state.histories;
-              if (items.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        "assets/img/out-of-stock.png",
-                        height: 60,
-                        width: 60,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text("No History", style: TextStyle(color: Colors.grey)),
-                    ],
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: BlocBuilder<HistoryCubit, HistoryState>(
+            builder: (context, state) {
+              if (state is HistoryLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is HistoryLoaded) {
+                final items = state.histories;
+                if (items.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/img/out-of-stock.png",
+                          height: 60,
+                          width: 60,
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "No History",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    _refreshHistory();
+                  },
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final h = items[index];
+                      return ListTile(
+                        leading: Icon(
+                          h.actionType.toLowerCase() == 'item added'
+                              ? Icons.add_circle
+                              : Icons.remove_circle,
+                          color:
+                              h.actionType.toLowerCase() == 'item added'
+                                  ? Colors.green
+                                  : Colors.red,
+                        ),
+                        title: Text(
+                          h.actionType,
+                          style: TextStyle(
+                            color:
+                                h.actionType.toLowerCase() == 'item added'
+                                    ? Colors.green
+                                    : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(h.details ?? ''),
+                        trailing: Text(
+                          h.actionTime.toLocal().toString().split('.')[0],
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      );
+                    },
                   ),
                 );
+              } else if (state is HistoryError) {
+                return Center(child: Text('Error: ${state.message}'));
               }
-              return RefreshIndicator(
-                onRefresh: () async {
-                  _refreshHistory();
-                },
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final h = items[index];
-                    return ListTile(
-                      leading: Icon(
-                        h.actionType.toLowerCase() == 'item added'
-                            ? Icons.add_circle
-                            : Icons.remove_circle,
-                        color: h.actionType.toLowerCase() == 'item added' ? Colors.green : Colors.red,
-                      ),
-                      title: Text(
-                        h.actionType,
-                        style: TextStyle(
-                          color: h.actionType.toLowerCase() == 'item added' ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(h.details ?? ''),
-                      trailing: Text(
-                        h.actionTime.toLocal().toString().split('.')[0],
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    );
-                  },
-                ),
-              );
-            } else if (state is HistoryError) {
-              return Center(child: Text('Error: ${state.message}'));
-            }
-            return const SizedBox.shrink();
-          },
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
