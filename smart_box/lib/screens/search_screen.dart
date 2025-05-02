@@ -6,6 +6,7 @@ import 'package:smart_box/bloc/cubits/search_cubit.dart';
 import 'package:smart_box/bloc/states/search_states.dart';
 import 'package:smart_box/screens/item_details.dart';
 import 'package:smart_box/screens/items.dart';
+import 'package:smart_box/screens/see_all.dart';
 import 'package:smart_box/services/item_service.dart';
 import '../services/search_service.dart';
 import '../models/item.dart';
@@ -230,7 +231,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       )..getItems(
                                                         box['box_id'],
                                                       ),
-                                                  child: Items(
+                                                  child: SeeAllItems(
                                                     boxId: box['box_id'],
                                                     userId: int.parse(
                                                       widget.userId,
@@ -265,13 +266,19 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         child: Column(
                                           children: [
-                                            if (it.imagePath != null)
-                                              Image.network(
-                                                it.imagePath!,
-                                                width: 60,
-                                                height: 60,
-                                                fit: BoxFit.cover,
-                                              ),
+                                            it.imagePath != null
+                                                ? Image.network(
+                                                  it.imagePath!,
+                                                  width: 60,
+                                                  height: 60,
+                                                  fit: BoxFit.cover,
+                                                )
+                                                : Icon(
+                                                  Icons.image_not_supported,
+                                                  size: 60,
+                                                  color: Colors.grey,
+                                                ),
+
                                             const SizedBox(height: 4),
                                             SizedBox(
                                               width: 60,
