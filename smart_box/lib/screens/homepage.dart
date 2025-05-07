@@ -12,6 +12,7 @@ import 'package:smart_box/screens/login_form.dart';
 import 'package:smart_box/screens/req_rec.dart';
 import 'package:smart_box/screens/req_sent.dart';
 import 'package:smart_box/screens/search_screen.dart';
+import 'package:smart_box/services/auth_service.dart';
 import 'package:smart_box/services/box_service.dart';
 import 'package:smart_box/widgets/box_widget.dart';
 
@@ -82,7 +83,6 @@ import 'package:smart_box/widgets/box_widget.dart';
 //   }
 // }
 
-
 class HomePage extends StatefulWidget {
   final Map<String, dynamic> user;
   const HomePage({Key? key, required this.user}) : super(key: key);
@@ -105,91 +105,113 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => HomeCubit(boxService: BoxService(),userId: _userId.toString())..fetchUserBoxes()),
-        BlocProvider(create: (_) => SharedBoxesCubit(BoxService())..fetchSharedBoxes(_userId)),
+        BlocProvider(
+          create:
+              (_) => HomeCubit(
+                authService: AuthService(),
+                boxService: BoxService(),
+                userId: _userId.toString(),
+              )..fetchUserBoxes(),
+        ),
+        BlocProvider(
+          create:
+              (_) => SharedBoxesCubit(BoxService())..fetchSharedBoxes(_userId),
+        ),
       ],
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
+      child: BlocListener<HomeCubit, HomeState>(
+        listener: (context, state) {
+          if (state is HomeLoggedOut) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => LoginForm()),
+              (route) => false,
+            );
+          }
+        },
+        child: Scaffold(
           backgroundColor: Colors.white,
-          elevation: 0,
-          title: const Text('Home', style: TextStyle(color: Colors.black)),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.black),
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder:
-                        (context, animation, secondaryAnimation) =>
-                            SearchScreen(userId: _userId.toString()),
-                    transitionDuration: const Duration(milliseconds: 300),
-                    transitionsBuilder: (
-                      context,
-                      animation,
-                      secondaryAnimation,
-                      child,
-                    ) {
-                      final tween = Tween<Offset>(
-                        begin: const Offset(1, 0),
-                        end: Offset.zero,
-                      ).chain(CurveTween(curve: Curves.easeOut));
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: const Text('Home', style: TextStyle(color: Colors.black)),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search, color: Colors.black),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder:
+                          (context, animation, secondaryAnimation) =>
+                              SearchScreen(userId: _userId.toString()),
+                      transitionDuration: const Duration(milliseconds: 300),
+                      transitionsBuilder: (
+                        context,
+                        animation,
+                        secondaryAnimation,
+                        child,
+                      ) {
+                        final tween = Tween<Offset>(
+                          begin: const Offset(1, 0),
+                          end: Offset.zero,
+                        ).chain(CurveTween(curve: Curves.easeOut));
 
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        drawer: CustomDrawer(user: widget.user),
-        body: IndexedStack(
-          index: _currentIndex,
-          children: [
-            HomeContent(user: widget.user),                      
-            SharedBoxesContent(userId: _userId),                  
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          currentIndex: _currentIndex,
-          onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inbox),
-              label: 'My Boxes',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.group_work),
-              label: 'Shared',
-            ),
-          ],
-        ),
-        floatingActionButton: _currentIndex == 0
-            ? FloatingActionButton(
-                onPressed: () async {
-                  final didAdd = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AddBoxForm(userId: _userId.toString()),
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
                     ),
                   );
-                  if (didAdd == true) {
-                    context.read<HomeCubit>().fetchUserBoxes();
-                  }
                 },
-                child: const Icon(Icons.add),
-              )
-            : null,
+              ),
+            ],
+          ),
+          drawer: CustomDrawer(user: widget.user),
+          body: IndexedStack(
+            index: _currentIndex,
+            children: [
+              HomeContent(user: widget.user),
+              SharedBoxesContent(userId: _userId),
+            ],
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            currentIndex: _currentIndex,
+            onTap: (i) => setState(() => _currentIndex = i),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.inbox),
+                label: 'My Boxes',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.group_work),
+                label: 'Shared',
+              ),
+            ],
+          ),
+          floatingActionButton:
+              _currentIndex == 0
+                  ? FloatingActionButton(
+                    onPressed: () async {
+                      final didAdd = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => AddBoxForm(userId: _userId.toString()),
+                        ),
+                      );
+                      if (didAdd == true) {
+                        context.read<HomeCubit>().fetchUserBoxes();
+                      }
+                    },
+                    child: const Icon(Icons.add),
+                  )
+                  : null,
+        ),
       ),
     );
   }
 }
-
 
 class HomeContent extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -252,7 +274,6 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-
 class SharedBoxesContent extends StatelessWidget {
   final int userId;
   const SharedBoxesContent({Key? key, required this.userId}) : super(key: key);
@@ -288,7 +309,8 @@ class SharedBoxesContent extends StatelessWidget {
           );
         }
         return RefreshIndicator(
-          onRefresh: () => context.read<SharedBoxesCubit>().fetchSharedBoxes(userId),
+          onRefresh:
+              () => context.read<SharedBoxesCubit>().fetchSharedBoxes(userId),
           child: ListView.builder(
             padding: const EdgeInsets.all(12),
             itemCount: boxes.length,
@@ -301,7 +323,13 @@ class SharedBoxesContent extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BoxDetails(box: box, user: {'user': {'id': userId}}),
+                      builder:
+                          (_) => BoxDetails(
+                            box: box,
+                            user: {
+                              'user': {'id': userId},
+                            },
+                          ),
                     ),
                   );
                 },
@@ -313,8 +341,6 @@ class SharedBoxesContent extends StatelessWidget {
     );
   }
 }
-
-
 
 class CustomDrawer extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -361,11 +387,11 @@ class CustomDrawer extends StatelessWidget {
             leading: const Icon(Icons.request_page),
             title: const Text('Requests'),
             onTap: () async {
-               final result = await Navigator.push<bool>(
+              final result = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
                   builder:
-                      (_) => RequestsReceivedScreen(userId: user['user']['id'],),
+                      (_) => RequestsReceivedScreen(userId: user['user']['id']),
                 ),
               );
 
@@ -400,7 +426,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            onTap: () => _logout(context),
+            onTap: () => context.read<HomeCubit>().logout(),
             leading: const Icon(Icons.logout),
             title: const Text('Log out', style: TextStyle(color: Colors.red)),
           ),

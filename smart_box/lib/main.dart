@@ -3,42 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_box/bloc/cubits/confirmation_cubit.dart';
 import 'package:smart_box/bloc/cubits/register_cubit.dart';
+import 'package:smart_box/bloc/states/login_states.dart';
 import 'package:smart_box/firebase_options.dart';
-// import 'package:smart_box/screens/add_box.dart';
-// import 'package:smart_box/screens/homepage.dart';
+import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/login_form.dart';
-// import 'package:smart_box/screens/confirmation_code.dart';
-// import 'package:smart_box/screens/register_form.dart';
 import 'package:smart_box/services/auth_service.dart';
 import 'package:smart_box/services/notifications_service.dart';
-
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'bloc/cubits/login_cubit.dart';
 
-void main() async  {
-WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.instance.initialize();
-  runApp( MainApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
-   MainApp({super.key});
+  MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => LoginCubit(authService: AuthService())),
-        BlocProvider(create: (context) => RegisterCubit(authService: AuthService())),
-        BlocProvider(create: (context) => ConfirmationCubit()),
-      ],
+    return BlocProvider(
+      create: (_) {
+        final cubit = LoginCubit(authService: AuthService());
+
+        return cubit;
+      },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home:LoginForm(),
+        home: BlocBuilder<LoginCubit, LoginState>(
+          builder: (context, state) {
+            if (state is LoginChecking) {
+              return Scaffold(body: Center(child: CircularProgressIndicator(color: Colors.black,)));
+            }
+            if (state is LoginSuccess) return HomePage(user: state.user);
+            return LoginForm();
+          },
+        ),
       ),
     );
   }
 }
-  

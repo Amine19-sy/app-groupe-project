@@ -5,6 +5,7 @@ import 'package:smart_box/bloc/cubits/login_cubit.dart';
 import 'package:smart_box/bloc/states/login_states.dart';
 import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/register_form.dart';
+import 'package:smart_box/services/auth_service.dart';
 import 'package:smart_box/services/box_service.dart';
 import 'package:smart_box/widgets/input_field.dart';
 
@@ -45,6 +46,7 @@ class _LoginFormState extends State<LoginForm> {
                         (_) => HomeCubit(
                           userId: state.user["user"]["id"].toString(),
                           boxService: BoxService(),
+                          authService: AuthService()
                         )..fetchUserBoxes(),
                     child: HomePage(user: state.user),
                   ),

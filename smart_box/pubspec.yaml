@@ -21,11 +21,15 @@ dependencies:
   firebase_messaging: ^15.2.5
   firebase_core: ^3.13.0
   flutter_local_notifications: ^19.1.0
+  # flutter_bluetooth_serial: ^0.4.0
+  permission_handler: ^12.0.0+1
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_native_splash: ^2.4.6
 
 flutter:
   uses-material-design: true
@@ -38,3 +42,19 @@ flutter:
     - assets/img/google.png
     - assets/img/location.png
     - assets/img/add-product.png
+    - assets/img/logo_smart_box_splash.png
+    - assets/img/smart_box_text.png
+    - assets/img/splash_icon_white_bg.png
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/img/splash_icon_white_bg.png
+  branding: assets/img/smart_box_text.png
+  android: true
+  ios: true
+
+  android_12:
+    color: "#ffffff"
+    image: assets/img/splash_icon_white_bg.png
+    branding: assets/img/smart_box_text.png
+    
