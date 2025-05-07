@@ -12,6 +12,8 @@ class HomeLoading extends HomeState {}
 
 class HomeEmpty extends HomeState {}
 
+class HomeLoggedOut extends HomeState {}
+
 class HomeLoaded extends HomeState {
   final List<Box> boxes;
 

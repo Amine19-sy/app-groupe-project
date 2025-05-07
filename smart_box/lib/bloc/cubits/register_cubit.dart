@@ -4,11 +4,9 @@ import 'dart:async';
 import 'package:smart_box/bloc/states/register_states.dart';
 import 'package:smart_box/services/auth_service.dart';
 
-
-
 class RegisterCubit extends Cubit<RegisterState> {
   final AuthService authService;
-  
+
   RegisterCubit({required this.authService}) : super(RegisterInitial());
 
   /// Updated method to accept the required fields.
@@ -29,6 +27,9 @@ class RegisterCubit extends Cubit<RegisterState> {
         email: email,
         password: password,
       );
+      final token = response['access_token'] as String;
+      // persist the JWT
+      await authService.persistToken(token);
       emit(RegisterSuccess(response));
     } catch (error) {
       emit(RegisterFailure(error.toString()));
