@@ -6,7 +6,7 @@ import 'package:smart_box/services/BaseUrl.dart';
 
 
 class ItemService {
-  final String baseUrl = '${ChromeUrl}/api';
+  final String baseUrl = '${BackendUrl}/api';
 
   Future<List<Item>> getItems(int boxId) async {
     final response = await http.get(Uri.parse('$baseUrl/items?box_id=$boxId'));
@@ -49,6 +49,7 @@ class ItemService {
   required String name,
   required int userId,
   File? imageFile,
+  String? description,
 }) async {
   var request = http.MultipartRequest(
     'POST',
@@ -57,6 +58,7 @@ class ItemService {
   request.fields['box_id'] = boxId.toString();
   request.fields['name'] = name;
   request.fields['user_id'] = userId.toString();
+  request.fields['description'] = description.toString();
 
   if (imageFile != null) {
     request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
@@ -92,7 +94,7 @@ class ItemService {
       'name': name,
       if (boxId != null) 'box_id': boxId.toString(),
     };
-    final uri = Uri.parse('$ChromeUrl/api/search_items')
+    final uri = Uri.parse('$baseUrl/search_items')
         .replace(queryParameters: queryParameters);
 
     final resp = await http.get(uri);

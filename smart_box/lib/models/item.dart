@@ -4,6 +4,7 @@ class Item {
   final int id;
   final String boxId;
   final String name;
+  final String? description;
   final String? imagePath;
   final DateTime addedAt;
 
@@ -12,13 +13,14 @@ class Item {
     required this.boxId,
     required this.name,
     this.imagePath,
+    this.description,
     required this.addedAt,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
   final String? rawPath = json['image_path'];
   final String? imageUrl = rawPath != null
-      ? '${ChromeUrl}$rawPath' 
+      ? '${BackendUrl}$rawPath' 
       : null;
 
   return Item(
@@ -27,6 +29,7 @@ class Item {
     name: json['name'],
     imagePath: imageUrl,
     addedAt: DateTime.parse(json['added_at']),
+    description: json['description']
   );
 }
 
@@ -37,5 +40,6 @@ class Item {
         'name': name,
         'image_path': imagePath,
         'added_at': addedAt.toIso8601String(),
+        'description': description
       };
 }

@@ -5,17 +5,21 @@ class CustomTextField extends StatefulWidget {
   final String? labelText;
   final TextEditingController? controller;
   final bool isPassword;
-  final bool isCodeInput; // New flag for confirmation code input
+  final bool isCodeInput;
   final int? maxLines;
+  // New callbacks
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onTap;
 
   const CustomTextField({
     Key? key,
     this.labelText,
     this.controller,
     this.isPassword = false,
-    this.isCodeInput =
-        false, // Default is false, only enable for confirmation codes
+    this.isCodeInput = false,
     this.maxLines,
+    this.onChanged,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -25,7 +29,7 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   late FocusNode _focusNode;
   bool _isFocused = false;
-  bool _isObscured = true; // Controls password visibility
+  bool _isObscured = true;
 
   @override
   void initState() {
@@ -48,13 +52,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextFormField(
       maxLines: widget.maxLines ?? 1,
-      onChanged: (value) {
-        if (widget.isCodeInput) {
-          if (value.length == 1) {
-            FocusScope.of(context).nextFocus();
-          }
-        }
-      },
       controller: widget.controller,
       focusNode: _focusNode,
       cursorColor: Colors.blue,
@@ -66,10 +63,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
               LengthLimitingTextInputFormatter(1),
               FilteringTextInputFormatter.digitsOnly,
             ]
-          : null, // Apply only if isCodeInput is true
+          : null,
       textAlign: widget.isCodeInput ? TextAlign.center : TextAlign.start,
       style: TextStyle(
-        fontSize: widget.isCodeInput ? 24 : 16, // Bigger for code input
+        fontSize: widget.isCodeInput ? 24 : 16,
         fontWeight: widget.isCodeInput ? FontWeight.bold : FontWeight.normal,
       ),
       decoration: InputDecoration(
@@ -105,6 +102,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
               )
             : null,
       ),
+      onTap: widget.onTap,
+      onChanged: (value) {
+        // Forward to external callback
+        if (widget.onChanged != null) widget.onChanged!(value);
+        // Existing code-input logic
+        if (widget.isCodeInput && value.length == 1) {
+          FocusScope.of(context).nextFocus();
+        }
+      },
     );
   }
 }

@@ -16,72 +16,6 @@ import 'package:smart_box/services/auth_service.dart';
 import 'package:smart_box/services/box_service.dart';
 import 'package:smart_box/widgets/box_widget.dart';
 
-// class HomePage extends StatelessWidget {
-//   final Map<String, dynamic> user;
-//   const HomePage({Key? key, required this.user}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         backgroundColor: Colors.white,
-//         appBar: AppBar(
-//           backgroundColor: Colors.white,
-//           elevation: 0,
-//           title: const Text('Home', style: TextStyle(color: Colors.black)),
-//           actions: [
-//             IconButton(
-//               icon: const Icon(Icons.search, color: Colors.black),
-//               onPressed: () {
-//                 Navigator.of(context).push(
-//                   PageRouteBuilder(
-//                     pageBuilder:
-//                         (context, animation, secondaryAnimation) =>
-//                             SearchScreen(userId: user['user']['id'].toString()),
-//                     transitionDuration: const Duration(milliseconds: 300),
-//                     transitionsBuilder: (
-//                       context,
-//                       animation,
-//                       secondaryAnimation,
-//                       child,
-//                     ) {
-//                       final tween = Tween<Offset>(
-//                         begin: const Offset(1, 0),
-//                         end: Offset.zero,
-//                       ).chain(CurveTween(curve: Curves.easeOut));
-
-//                       return SlideTransition(
-//                         position: animation.drive(tween),
-//                         child: child,
-//                       );
-//                     },
-//                   ),
-//                 );
-//               },
-//             ),
-//           ],
-//         ),
-//         drawer: CustomDrawer(user: user),
-//         body: HomeContent(user: user),
-//         floatingActionButton: FloatingActionButton(
-//           onPressed: () async {
-//             final didAdd = await Navigator.push<bool>(
-//               context,
-//               MaterialPageRoute(
-//                 builder:
-//                     (_) => AddBoxForm(userId: user['user']['id'].toString()),
-//               ),
-//             );
-//             if (didAdd == true) {
-//               context.read<HomeCubit>().fetchUserBoxes();
-//             }
-//           },
-//           child: const Icon(Icons.add),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class HomePage extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -94,28 +28,40 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   late final int _userId;
+  late HomeCubit _homeCubit;
+  late SharedBoxesCubit _sharedBoxesCubit;
 
   @override
   void initState() {
     super.initState();
     _userId = widget.user['user']['id'];
+    // Initialize the cubits here
+    _homeCubit = HomeCubit(
+      authService: AuthService(),
+      boxService: BoxService(),
+      userId: _userId.toString(),
+    )..fetchUserBoxes();
+    
+    _sharedBoxesCubit = SharedBoxesCubit(BoxService())..fetchSharedBoxes(_userId);
+  }
+  
+  @override
+  void dispose() {
+    // Clean up cubits when the widget is disposed
+    _homeCubit.close();
+    _sharedBoxesCubit.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create:
-              (_) => HomeCubit(
-                authService: AuthService(),
-                boxService: BoxService(),
-                userId: _userId.toString(),
-              )..fetchUserBoxes(),
+        BlocProvider.value(
+          value: _homeCubit,
         ),
-        BlocProvider(
-          create:
-              (_) => SharedBoxesCubit(BoxService())..fetchSharedBoxes(_userId),
+        BlocProvider.value(
+          value: _sharedBoxesCubit,
         ),
       ],
       child: BlocListener<HomeCubit, HomeState>(
@@ -140,9 +86,8 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.of(context).push(
                     PageRouteBuilder(
-                      pageBuilder:
-                          (context, animation, secondaryAnimation) =>
-                              SearchScreen(userId: _userId.toString()),
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          SearchScreen(userId: _userId.toString()),
                       transitionDuration: const Duration(milliseconds: 300),
                       transitionsBuilder: (
                         context,
@@ -189,30 +134,29 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          floatingActionButton:
-              _currentIndex == 0
-                  ? FloatingActionButton(
-                    onPressed: () async {
-                      final didAdd = await Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => AddBoxForm(userId: _userId.toString()),
-                        ),
-                      );
-                      if (didAdd == true) {
-                        context.read<HomeCubit>().fetchUserBoxes();
-                      }
-                    },
-                    child: const Icon(Icons.add),
-                  )
-                  : null,
+          floatingActionButton: _currentIndex == 0
+              ? FloatingActionButton(
+                  onPressed: () async {
+                    final result = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AddBoxForm(userId: _userId.toString()),
+                      ),
+                    );
+                    
+                    if (result == true) {
+                      // Use the class instance directly instead of context.read
+                      _homeCubit.fetchUserBoxes();
+                    }
+                  },
+                  child: const Icon(Icons.add),
+                )
+              : null,
         ),
       ),
     );
   }
 }
-
 class HomeContent extends StatelessWidget {
   final Map<String, dynamic> user;
   const HomeContent({Key? key, required this.user}) : super(key: key);
@@ -247,11 +191,12 @@ class HomeContent extends StatelessWidget {
               await context.read<HomeCubit>().fetchUserBoxes();
             },
             child: ListView.builder(
-              padding: const EdgeInsets.all(12),
+              // padding: const EdgeInsets.all(12),
               itemCount: state.boxes.length,
               itemBuilder: (context, index) {
                 final box = state.boxes[index];
                 return GestureDetector(
+                  key: ValueKey(box.id),
                   child: StyledBoxCard(box: box),
                   onTap: () {
                     Navigator.push(
@@ -346,14 +291,6 @@ class CustomDrawer extends StatelessWidget {
   final Map<String, dynamic> user;
 
   const CustomDrawer({Key? key, required this.user}) : super(key: key);
-
-  void _logout(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginForm()),
-      (route) => false,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
