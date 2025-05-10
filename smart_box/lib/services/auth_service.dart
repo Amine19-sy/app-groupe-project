@@ -5,7 +5,7 @@ import 'package:smart_box/services/BaseUrl.dart';
 
 class AuthService {
   final _storage = FlutterSecureStorage();
-  final String baseUrl = ChromeUrl;
+  final String baseUrl = BackendUrl;
 
   // Register function
   Future<Map<String, dynamic>> register({

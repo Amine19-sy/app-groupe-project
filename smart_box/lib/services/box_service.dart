@@ -6,7 +6,7 @@ import 'package:smart_box/models/user.dart';
 import 'package:smart_box/services/BaseUrl.dart';
 
 class BoxService {
-  final String baseUrl = ChromeUrl;
+  final String baseUrl = BackendUrl;
 
   Future<List<Box>> fetchUserBoxes(String userId) async {
     final url = Uri.parse('$baseUrl/api/boxes?user_id=$userId');
@@ -110,7 +110,7 @@ class BoxService {
   
   Future<List<User>> fetchCollaborators(int boxId) async {
     final resp = await http.get(
-      Uri.parse('$baseUrl/api/box/collaborators?box_id=$boxId'),
+      Uri.parse('$baseUrl/api/box/box_collaborators?box_id=$boxId'),
     );
     if (resp.statusCode != 200) {
       final error = jsonDecode(resp.body)['error'] ?? resp.body;

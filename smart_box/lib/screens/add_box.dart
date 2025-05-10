@@ -49,12 +49,15 @@ class _AddBoxFormState extends State<AddBoxForm> {
 
       // Once box has been created, return to the previous screen (pop)
       // You may pass the newBox back to refresh your list.
+      // Navigator.of(context).pop(true);
+      if (mounted) {
       Navigator.of(context).pop(true);
+    }
     } catch (error) {
       // Show an error message if something goes wrong.
-      ScaffoldMessenger.of(context).showSnackBar(
+      if(mounted){ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error adding box: ${error.toString()}')),
-      );
+      );}
     } finally {
       if (mounted) {
         setState(() {

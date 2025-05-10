@@ -1,16 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_box/bloc/cubits/confirmation_cubit.dart';
-import 'package:smart_box/bloc/cubits/register_cubit.dart';
 import 'package:smart_box/bloc/states/login_states.dart';
 import 'package:smart_box/firebase_options.dart';
 import 'package:smart_box/screens/homepage.dart';
 import 'package:smart_box/screens/login_form.dart';
 import 'package:smart_box/services/auth_service.dart';
 import 'package:smart_box/services/notifications_service.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'bloc/cubits/login_cubit.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

@@ -4,7 +4,7 @@ import 'package:smart_box/services/BaseUrl.dart';
 
 class HistoryService{
     
-  String baseUrl ='${ChromeUrl}/api';
+  String baseUrl ='${BackendUrl}/api';
 
   Future<List<Map<String, dynamic>>> getHistory(int boxId) async {
   final response = await http.get(Uri.parse('$baseUrl/history/$boxId'));

@@ -182,6 +182,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         name: _nameCtrl.text,
         userId: int.parse(widget.userId),
         imageFile: _pickedImage,
+        description: _descCtrl.text
       );
       Navigator.pop(context, true);
     } catch (e) {
