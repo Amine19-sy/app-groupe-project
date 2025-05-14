@@ -57,7 +57,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           (_) => HomeCubit(
                             userId: state.user["user"]["id"].toString(),
                             boxService: BoxService(),
-                            authService: AuthService()
+                            authService: AuthService(),
                           )..fetchUserBoxes(),
                       child: HomePage(user: state.user),
                     ),
@@ -101,6 +101,12 @@ class _RegisterFormState extends State<RegisterForm> {
                             CustomTextField(
                               labelText: "Name",
                               controller: _nameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter your username";
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 16),
                             const Text(
@@ -111,6 +117,12 @@ class _RegisterFormState extends State<RegisterForm> {
                             CustomTextField(
                               labelText: "name@gmail.com",
                               controller: _emailController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter your email";
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 16),
                             const Text(
@@ -122,17 +134,29 @@ class _RegisterFormState extends State<RegisterForm> {
                               labelText: "Create a password",
                               isPassword: true,
                               controller: _passwordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter your password";
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 16),
                             const Text(
                               "Confirm password",
                               style: TextStyle(fontWeight: FontWeight.bold),
+                              
                             ),
                             const SizedBox(height: 8),
                             CustomTextField(
                               labelText: "Confirm password",
                               isPassword: true,
-                              controller: _confirmController,
+                              controller: _confirmController,validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter your password";
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 24),
                             Row(

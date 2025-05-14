@@ -2,6 +2,10 @@ from flask import Flask
 from flask_cors import CORS
 from config import Config
 from extensions import db,jwt
+import firebase_admin
+from firebase_admin import credentials, messaging
+
+
 
 
 
@@ -11,6 +15,9 @@ def create_app():
     # Initialize extensions with app
     db.init_app(app)
     jwt.init_app(app)
+    # Initialize firebase for notifications service
+    cred = credentials.Certificate('smart-box-6c453-firebase-adminsdk-fbsvc-fde09c26e5.json')
+    firebase_admin.initialize_app(cred)
     # Enable CORS for all routes
     CORS(app)
 

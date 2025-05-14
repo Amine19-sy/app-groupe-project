@@ -56,7 +56,10 @@ class _SendRequestScreenState extends State<SendRequestScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(title: Text('Invite to "${widget.box.name}"'),backgroundColor: Colors.white,),
+        appBar: AppBar(
+          title: Text('Invite to "${widget.box.name}"'),
+          backgroundColor: Colors.white,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -70,6 +73,12 @@ class _SendRequestScreenState extends State<SendRequestScreen> {
                 child: CustomTextField(
                   labelText: "invitee@example.com",
                   controller: _emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter an email";
+                    }
+                    return null;
+                  },
                 ),
                 // TextFormField(
                 //   controller: _emailController,

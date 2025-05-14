@@ -7,9 +7,9 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final bool isCodeInput;
   final int? maxLines;
-  // New callbacks
   final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
+  final FormFieldValidator<String>? validator;
 
   const CustomTextField({
     Key? key,
@@ -20,6 +20,7 @@ class CustomTextField extends StatefulWidget {
     this.maxLines,
     this.onChanged,
     this.onTap,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -81,11 +82,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
           borderRadius: BorderRadius.circular(12),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey, width: 1.0),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.0),
           borderRadius: BorderRadius.circular(12),
         ),
         suffixIcon: widget.isPassword
@@ -102,11 +103,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
               )
             : null,
       ),
+      validator: widget.validator, 
       onTap: widget.onTap,
       onChanged: (value) {
-        // Forward to external callback
         if (widget.onChanged != null) widget.onChanged!(value);
-        // Existing code-input logic
         if (widget.isCodeInput && value.length == 1) {
           FocusScope.of(context).nextFocus();
         }
