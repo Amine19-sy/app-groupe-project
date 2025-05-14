@@ -55,7 +55,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 16),
-                CustomTextField(labelText: "Name", controller: _nameCtrl),
+                CustomTextField(
+                  labelText: "Name",
+                  controller: _nameCtrl,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a name";
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 16),
                 CustomTextField(
                   labelText: "Description",
@@ -182,7 +191,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         name: _nameCtrl.text,
         userId: int.parse(widget.userId),
         imageFile: _pickedImage,
-        description: _descCtrl.text
+        description: _descCtrl.text,
       );
       Navigator.pop(context, true);
     } catch (e) {

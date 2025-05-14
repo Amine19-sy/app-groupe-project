@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:smart_box/services/auth_service.dart';
+import 'package:smart_box/services/notifications_service.dart';
 import '../states/login_states.dart';
 import 'dart:async';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -41,6 +43,12 @@ class LoginCubit extends Cubit<LoginState> {
       // persist the JWT
       print("access token :  $token");
       await authService.persistToken(token);
+      final fcmToken = await NotificationService.instance.getFcmToken();
+      await authService.registerFcmToken(
+        jwt: token,
+        fcmToken: fcmToken!,
+        deviceInfo: Platform.operatingSystem + ' ' + Platform.operatingSystemVersion,
+      );
       emit(LoginSuccess(response));
     } catch (error) {
       emit(LoginFailure(error.toString()));

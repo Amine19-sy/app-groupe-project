@@ -42,7 +42,7 @@ class RequestsReceivedScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            '${req.id} invited you to manage "${req.boxId}"',
+                            '${req.requesterName} invited you to manage "${req.boxName}"',
                             style: const TextStyle(fontSize: 16),
                           ),
                         ),

@@ -12,7 +12,6 @@ class AuthService {
     required String username,
     required String email,
     required String password,
-  
   }) async {
     final url = Uri.parse('$baseUrl/register');
     final response = await http.post(
@@ -42,10 +41,7 @@ class AuthService {
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "username": username,
-        "password": password,
-      }),
+      body: jsonEncode({"username": username, "password": password}),
     );
 
     if (response.statusCode == 200) {
@@ -56,7 +52,27 @@ class AuthService {
     }
   }
 
-    Future<Map<String, dynamic>> fetchCurrentUser(String token) async {
+  Future<void> registerFcmToken({
+    required String jwt,
+    required String fcmToken,
+    String? deviceInfo,
+  }) async {
+    final url = Uri.parse('$baseUrl/register-token');
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $jwt",
+      },
+      body: jsonEncode({"token": fcmToken, "device_info": deviceInfo ?? ""}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to register FCM token');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchCurrentUser(String token) async {
     final url = Uri.parse('$baseUrl/me');
     final response = await http.get(
       url,
@@ -74,12 +90,10 @@ class AuthService {
     }
   }
 
-    Future<void> persistToken(String token) =>
-    _storage.write(key: 'access_token', value: token);
+  Future<void> persistToken(String token) =>
+      _storage.write(key: 'access_token', value: token);
 
-  Future<String?> readToken() =>
-    _storage.read(key: 'access_token');
+  Future<String?> readToken() => _storage.read(key: 'access_token');
 
-  Future<void> deleteToken() =>
-    _storage.delete(key: 'access_token');
+  Future<void> deleteToken() => _storage.delete(key: 'access_token');
 }

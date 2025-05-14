@@ -4,7 +4,6 @@ import 'package:smart_box/bloc/cubits/items_cubits.dart';
 import 'package:smart_box/bloc/cubits/search_cubit.dart';
 import 'package:smart_box/bloc/states/search_states.dart';
 import 'package:smart_box/screens/item_details.dart';
-import 'package:smart_box/screens/items.dart';
 import 'package:smart_box/screens/see_all.dart';
 import 'package:smart_box/services/item_service.dart';
 import 'package:smart_box/widgets/input_field.dart';

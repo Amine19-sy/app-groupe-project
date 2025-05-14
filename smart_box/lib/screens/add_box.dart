@@ -51,13 +51,15 @@ class _AddBoxFormState extends State<AddBoxForm> {
       // You may pass the newBox back to refresh your list.
       // Navigator.of(context).pop(true);
       if (mounted) {
-      Navigator.of(context).pop(true);
-    }
+        Navigator.of(context).pop(true);
+      }
     } catch (error) {
       // Show an error message if something goes wrong.
-      if(mounted){ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding box: ${error.toString()}')),
-      );}
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding box: ${error.toString()}')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -84,79 +86,85 @@ class _AddBoxFormState extends State<AddBoxForm> {
             ),
           ),
         ),
-        body:  Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    labelText: "Name",
-                    controller: _nameController,
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    labelText: "Description",
-                    controller: _descriptionController,
-                    maxLines: 6,
-                  ),
-                  const SizedBox(height: 16),
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(color: Colors.grey, fontSize: 16),
-                      children: [
-                        const TextSpan(text: "Or Use "),
-                        TextSpan(
-                          text: "QR Code!",
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          recognizer:
-                              TapGestureRecognizer()
-                                ..onTap = () {
-                                  // Implement your QR code logic here.
-                                },
+        body: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                CustomTextField(
+                  labelText: "Name",
+                  controller: _nameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a name ";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  labelText: "Description",
+                  controller: _descriptionController,
+                  maxLines: 6,
+                ),
+                const SizedBox(height: 16),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.grey, fontSize: 16),
+                    children: [
+                      const TextSpan(text: "Or Use "),
+                      TextSpan(
+                        text: "QR Code!",
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _submitForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        recognizer:
+                            TapGestureRecognizer()
+                              ..onTap = () {
+                                // Implement your QR code logic here.
+                              },
                       ),
-                      child:
-                          _isLoading
-                              ? const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              )
-                              : const Text(
-                                "Add",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const Spacer(),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            )
+                            : const Text(
+                              "Add",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
         // ),
       ),
     );

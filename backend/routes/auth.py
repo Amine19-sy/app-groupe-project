@@ -1,4 +1,6 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
+from models.device_token import DeviceToken
 from extensions import db,jwt
 from models.user import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -70,6 +72,31 @@ def me():
 
     # return the same dict you used in register/login
     return jsonify({"user": user.to_dict()}), 200
+
+@auth_bp.route('/register-token', methods=['POST'])
+@jwt_required()
+def register_token():
+    user_id = int(get_jwt_identity())
+    data = request.get_json() or {}
+    fcm_token = data.get('token')
+    device_info = data.get('device_info', '')
+
+    if not fcm_token:
+        return jsonify({"error": "No token provided"}), 400
+
+    # Remove this token from any other user
+    DeviceToken.query.filter(DeviceToken.token == fcm_token, DeviceToken.user_id != user_id).delete()
+
+    # Upsert for this user
+    dt = DeviceToken.query.filter_by(user_id=user_id, token=fcm_token).first()
+    if not dt:
+        dt = DeviceToken(user_id=user_id, token=fcm_token, device_info=device_info)
+        db.session.add(dt)
+    else:
+        dt.last_seen = datetime.utcnow()
+
+    db.session.commit()
+    return jsonify({"message": "Token registered"}), 200
 
 @jwt.unauthorized_loader
 def missing_token_callback(error_string):

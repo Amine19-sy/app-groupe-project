@@ -93,14 +93,26 @@ class _LoginFormState extends State<LoginForm> {
                               ),
                               SizedBox(height: 24),
                               CustomTextField(
-                                labelText: "Email address", // identifier field
+                                labelText: "Username", // identifier field
                                 controller: _identifierController,
+                                validator: (value){
+                                  if (value == null || value.isEmpty) {
+            return "Please enter your username";
+          }
+          return null;
+                                },
                               ),
                               SizedBox(height: 24),
                               CustomTextField(
                                 labelText: "Password",
                                 controller: _passwordController,
                                 isPassword: true,
+                                validator: (value){
+                                  if (value == null || value.isEmpty) {
+            return "Please enter your password";
+          }
+          return null;
+                                },
                               ),
                               SizedBox(height: 16),
                               GestureDetector(

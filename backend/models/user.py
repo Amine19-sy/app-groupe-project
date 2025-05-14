@@ -9,6 +9,8 @@ class User(db.Model):
     # Relationships
     boxes = db.relationship('Box', backref='owner', lazy=True, cascade="all, delete-orphan")
     histories = db.relationship('History', backref='user', lazy=True, cascade="all, delete-orphan")
+    device_tokens = db.relationship('DeviceToken',back_populates='user',lazy='dynamic',cascade='all, delete-orphan')
+
     
     def to_dict(self):
         return {'id': self.id, 'username': self.username, 'email': self.email}
